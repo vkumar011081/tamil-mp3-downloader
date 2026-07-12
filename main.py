@@ -151,13 +151,15 @@ def prompt_choice(prompt: str, default: str = '') -> str:
 def show_and_download(index_url: str, category_name: str, save_subpath_default: str):
     clear_below_banner(BANNER, BANNER_COLOR, RESET)
     try:
-        page = requests.get(index_url, timeout=30)
-        page.raise_for_status()
+        # Read the small directory-index response while ensuring its network
+        # connection is returned to the system immediately afterwards.
+        with requests.get(index_url, timeout=30) as page:
+            page.raise_for_status()
+            soup = BeautifulSoup(page.content, 'html.parser')
     except Exception as e:
         print(ERROR_COLOR + f"Failed to fetch URL {index_url}: {e}" + RESET)
         return
 
-    soup = BeautifulSoup(page.content, 'html.parser')
     hrefs = collect_filtered_hrefs(soup)
     audio_count = count_audio_hrefs(hrefs)
 
