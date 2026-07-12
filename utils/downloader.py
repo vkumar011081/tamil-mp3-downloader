@@ -2,7 +2,16 @@ from pathlib import Path
 import requests
 from urllib.parse import unquote
 from clint.textui import progress
-from colorama import Fore, Style
+
+try:
+    from colorama import Fore, Style
+except Exception:
+    class _Dummy:
+        def __getattr__(self, _):
+            return ''
+
+    Fore = _Dummy()
+    Style = _Dummy()
 
 AUDIO_EXTS = ('.wav', '.mp3', '.mp4', '.m4a', '.aac', '.flac')
 
